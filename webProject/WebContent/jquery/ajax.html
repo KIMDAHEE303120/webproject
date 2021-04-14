@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jquery/ajax.html</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		//let query = 'boardNo=4&title=test$content=test&writer=user1';
+
+		//리스트 보여주기
+		$.ajax({
+			url : 'ajaxList.jsp',
+			dataType: 'json',
+			success : function(result) {
+				let tbl = $('<table border = "1"/>');
+				let trTag, thTag, tdTag, text;
+				for (data of result) {
+					trTag = $('<tr />');
+					trTag.append(
+							$('<td />').html(data.boardNo),
+							$('<td />').html(data.title),
+							$('<td />').html(data.content),
+							$('<td />').html(data.writer),
+							$('<td />').html($('<button />').html('삭제').click(delData))							
+							);
+					tbl.append(trTag);
+				}				
+				$('#show').append(tbl);
+				//let data = JSON.parse(result);
+				//console.log(data);
+				//console.log(result);
+			}
+		});
+		
+		function delData(i) {
+			
+		}
+		
+		
+		
+
+		//값 입력하기
+		$('#frm').submit(function() {
+			event.preventDefault();
+			console.log($('#frm').serialize());
+
+			$.ajax({
+				url : $('#frm').attr('action'), // 요청할 페이지 
+				/*
+				data : {
+					boardNo : $('input[name="boardNo"]').val(),
+					title :  $('input[name="title"]').val(),
+					content :  $('textarea[name="content"]').val(),
+					writer :  $('input[name="writer"]').val()
+				},
+				 */
+				data : $('#frm').serialize(), //줄줄이 안쓰고도 알아서 key와 value값 가져옴~~
+				success : function(data) {
+					let result = JSON.parse(data);
+					console.log(result);
+
+					$('input[name="boardNo"]').val(''); //val()<>val('') 구분하기
+					$('input[name="title"]').val('');
+					$('textaera[name="content"]').val('');
+					$('input[name="writer"]').val('');
+				}
+			}); //end of ajax
+		}); //end of '#frm'.submit(finction)
+	});
+</script>
+</head>
+<body>
+	<form action="ajax.jsp" id="frm" method = "GET">
+		<div>게시글 번호: <input type = "text" name ="boardNo"></div>
+		<div>제목: <input type = "text" name ="title"></div>
+		<div>내용: <textarea type = "text" name ="content" cols="30" rows="10"></textarea></div>
+		<div>작성자: <input type = "text" name ="writer"></div>
+		
+		<input type="submit" value="Send">
+		<input type="reset" value="Cancel">
+		
+		
+	</form>
+	
+	<div id="show"></div>
+	
+</body>
+</html>
