@@ -107,6 +107,39 @@ public class BoardDAO {
 		}
 
 	}
+	
+	//입력 후 결과 확인하게
+	public Board insertBoardResult(Board board) {
+		conn = DBcon.getConnection();
+		sql = "insert into board values(" 
+				+ "" + board.getBoardNo() // 정수는 ''안써도 됨
+				+ ", '" + board.getTitle() + "'" // 문자열이라서 ''넣어줘야함..
+				+ ", '" + board.getContent() + "'" + ""
+				+ ", '" + board.getWriter() + "'" + ""
+				+ ", sysdate" + ")";
+		String sql1 = "select * from board where board_no = " + board.getBoardNo();
+		Board returnVal = new Board();
+		try {
+			stmt = conn.createStatement();
+			int r = stmt.executeUpdate(sql); // update 사용해야 함
+			System.out.println(r + "건 입력되었습니다.");
+
+			rs = stmt.executeQuery(sql1);
+			if (rs.next()) {
+				returnVal.setBoardNo(rs.getInt("board_no"));
+				returnVal.setContent(rs.getString("content"));
+				returnVal.setCreationDate(rs.getString("creation_date"));
+				returnVal.setTitle(rs.getString("title"));
+				returnVal.setWriter(rs.getString("writer"));
+			
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		return returnVal;
+	}
 
 	// 수정
 	public void updateBoard(Board board) {
@@ -127,10 +160,9 @@ public class BoardDAO {
 	}
 
 	// 삭제
-	public void deleteBoard(Board board) {
+	public Board deleteBoard(Board board) {
 		conn = DBcon.getConnection();
 		sql = "delete from board where board_no = " + board.getBoardNo();
-
 		try {
 			stmt = conn.createStatement();
 			int r = stmt.executeUpdate(sql);
@@ -140,7 +172,7 @@ public class BoardDAO {
 		} finally {
 			close();
 		}
-
+		return board;
 	}
 	
 	
